@@ -195,7 +195,6 @@
     let targetSpeed = 0.35;
     let noFloats = true;
 
-    const worlds = [];
     const comets = [];
     const ambientStars = [];
     const skyComets = [];
@@ -221,28 +220,13 @@
       canvas.style.height = h + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      if (!worlds.length) {
-        const worldCount = 10;
-        for (let i = 0; i < worldCount; i++) {
-          worlds.push({
-            arm: i % 2,
-            progress: Math.random(),
-            speed: 0.18 + Math.random() * 0.45,
-            size: 7 + Math.random() * 16,
-            ring: Math.random() > 0.6,
-            hueA: 165 + Math.random() * 120,
-            hueB: 250 + Math.random() * 90
-          });
-        }
-      }
-
       if (!comets.length) {
-        const cometCount = 18;
+        const cometCount = 28;
         for (let i = 0; i < cometCount; i++) {
           comets.push({
             arm: i % 2,
             progress: Math.random(),
-            speed: 0.04 + Math.random() * 0.07,
+            speed: 0.03 + Math.random() * 0.05,
             size: 1.8 + Math.random() * 1.8,
             hue: Math.random() > 0.5 ? 195 : 325
           });
@@ -250,7 +234,7 @@
       }
 
       if (!ambientStars.length) {
-        const starCount = Math.max(220, Math.floor((w * h) / 4500));
+        const starCount = Math.max(420, Math.floor((w * h) / 2600));
         for (let i = 0; i < starCount; i++) {
           ambientStars.push({
             x: Math.random() * w,
@@ -262,7 +246,7 @@
       }
 
       if (!skyComets.length) {
-        for (let i = 0; i < 14; i++) skyComets.push(makeSkyComet());
+        for (let i = 0; i < 22; i++) skyComets.push(makeSkyComet());
       }
     }
 
@@ -368,16 +352,15 @@
       ctx.restore();
 
       drawSpiralStars(t, base);
-      drawSpiralWorlds(t, base);
       drawSpiralComets(t, base);
       drawOrbitMessages(t, base);
     }
 
     function drawSpiralStars(t, base) {
       ctx.save();
-      for (let i = 0; i < 260; i++) {
+      for (let i = 0; i < 420; i++) {
         const arm = i % 2;
-        const q = (i / 260) * 10 * Math.PI;
+        const q = (i / 420) * 10 * Math.PI;
         const rr = 3 + q * 12.5;
         const a = q + arm * Math.PI + t;
         const x = cx + Math.cos(a) * rr;
@@ -388,50 +371,6 @@
         ctx.beginPath();
         ctx.arc(x, y, 0.6 + (i % 3) * 0.4, 0, Math.PI * 2);
         ctx.fill();
-      }
-      ctx.restore();
-    }
-
-    function drawSpiralWorlds(t, base) {
-      ctx.save();
-      for (let i = 0; i < worlds.length; i++) {
-        const wld = worlds[i];
-        wld.progress += wld.speed * 0.0018 * speed;
-        if (wld.progress > 1) wld.progress = 0;
-
-        const q = wld.progress * 10 * Math.PI;
-        const rr = 3 + q * 12.5;
-        const a = q + wld.arm * Math.PI + t;
-        const x = cx + Math.cos(a) * rr;
-        const y = cy + Math.sin(a) * rr * 0.52;
-
-        const g = ctx.createRadialGradient(
-          x - wld.size * 0.35,
-          y - wld.size * 0.4,
-          wld.size * 0.2,
-          x,
-          y,
-          wld.size
-        );
-        g.addColorStop(0, `hsl(${wld.hueA},95%,84%)`);
-        g.addColorStop(0.55, `hsl(${wld.hueA},72%,53%)`);
-        g.addColorStop(1, `hsl(${wld.hueB},80%,30%)`);
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(x, y, wld.size, 0, Math.PI * 2);
-        ctx.fill();
-
-        if (wld.ring) {
-          ctx.save();
-          ctx.translate(x, y);
-          ctx.rotate(a * 0.55);
-          ctx.strokeStyle = 'rgba(230,238,255,0.5)';
-          ctx.lineWidth = Math.max(1, wld.size * 0.1);
-          ctx.beginPath();
-          ctx.ellipse(0, 0, wld.size * 1.55, wld.size * 0.45, 0, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.restore();
-        }
       }
       ctx.restore();
     }
